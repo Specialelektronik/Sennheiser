@@ -1,0 +1,282 @@
+/*
+Dealer Name: JaDeVa AB
+Programmer: Niklas Olsson
+*/
+
+/*******************************************************************************************
+  Compiler Directives
+*******************************************************************************************/
+// #DEFINE_CONSTANT
+#CATEGORY "46" "Sennheiser"
+#HELP_PDF_FILE "Sennheiser_TCC2_1.0.0_SE.pdf"
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+
+#HELP_BEGIN
+#HELP_END
+
+
+/*******************************************************************************************
+  Include Libraries
+*******************************************************************************************/
+#INCLUDEPATH "..\\SIMPL SHARP\\Sennheiser_Modules_CSharp\\bin\\Release"
+#USER_SIMPLSHARP_LIBRARY "Sennheiser_Modules_CSharp"
+
+/*******************************************************************************************
+  DIGITAL, ANALOG and SERIAL INPUTS and OUTPUTS
+*******************************************************************************************/
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT Connect;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT Debug;
+DIGITAL_INPUT Enable_Incoming_Commands;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT Enable_Beam_Azimuth_Feedback;
+DIGITAL_INPUT Enable_Beam_Elevation_Feedback;
+DIGITAL_INPUT Enable_Input_Peak_Level_Feedback;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT Mute_On;
+DIGITAL_INPUT Mute_Off;
+DIGITAL_INPUT Mute_Toggle;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT Identify_On;
+DIGITAL_INPUT Identify_Off;
+DIGITAL_INPUT Identify_Toggle;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT Exclusion_Zone_Active;
+DIGITAL_INPUT Exclusion_Zone_Inactive;
+DIGITAL_INPUT Exclusion_Zone_Active_Toggle;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT Custom_Led_Active;
+DIGITAL_INPUT Custom_Led_Inactive;
+DIGITAL_INPUT Custom_Led_Active_Toggle;
+ANALOG_INPUT _skip_;
+ANALOG_INPUT Custom_Led_Color;
+ANALOG_INPUT Mic_Mute_Led_Color;
+ANALOG_INPUT Mic_On_Led_Color;
+ANALOG_INPUT Led_Brightness;
+ANALOG_INPUT _skip_;
+ANALOG_INPUT Dante_Output_Gain;
+ANALOG_INPUT _skip_;
+ANALOG_INPUT Speaker_Detection_Threshold;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT Set_Name[8];
+STRING_INPUT Set_Location[8];
+STRING_INPUT Set_Position[30];
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT Send_Custom_Command[255];
+STRING_INPUT _skip_;
+STRING_INPUT Device_IP[15];
+STRING_INPUT Device_UDP_Port[5];
+
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT Responding_FB;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT Mute_On_FB;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT Identifying_FB;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT Exclusion_Zone_Active_FB;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT Custom_Led_Active_FB;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT Custom_Led_Color_FB;
+ANALOG_OUTPUT Mic_Mute_Led_Color_FB;
+ANALOG_OUTPUT Mic_On_Led_Color_FB;
+ANALOG_OUTPUT Led_Brightness_FB;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT Dante_Output_Gain_FB;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT Speaker_Detection_Threshold_FB;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT Beam_Azimuth_Degrees_FB;
+ANALOG_OUTPUT Beam_Elevation_Degrees_FB;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT Input_Peak_Level_FB;
+STRING_OUTPUT _skip_;
+STRING_OUTPUT Name_FB;
+STRING_OUTPUT Location_FB;
+STRING_OUTPUT Position_FB;
+STRING_OUTPUT Product_FB;
+STRING_OUTPUT Version_FB;
+STRING_OUTPUT Serial_FB;
+STRING_OUTPUT Mac_Addresses_FB;
+STRING_OUTPUT _skip_;
+STRING_OUTPUT Dante_Ip_Addresses_FB;
+STRING_OUTPUT Dante_Mac_Addresses_FB;
+STRING_OUTPUT _skip_;
+STRING_OUTPUT Incoming_Command_FB;
+
+
+/*******************************************************************************************
+  Parameters
+*******************************************************************************************/
+STRING_PARAMETER Device_IP_Param[15];
+INTEGER_PARAMETER Device_UDP_Port_Param;
+
+/*******************************************************************************************
+  Parameter Properties
+*******************************************************************************************/
+#BEGIN_PARAMETER_PROPERTIES Device_IP_Param
+   propValidUnits = unitString;
+   propDefaultUnit = unitString;
+   propDefaultValue = "0.0.0.0";
+#END_PARAMETER_PROPERTIES
+#BEGIN_PARAMETER_PROPERTIES Device_UDP_Port_Param
+   propValidUnits = unitDecimal;
+   propDefaultUnit = unitDecimal;
+   propDefaultValue = 45d;
+#END_PARAMETER_PROPERTIES
+
+/*******************************************************************************************
+  Global Variables
+*******************************************************************************************/
+
+// INTEGER
+Tcc2SimplWrapper _device;
+
+/*******************************************************************************************
+  Functions
+*******************************************************************************************/
+
+Callback Function OnSetRespondingFb(Integer value)          { Responding_FB = value; }
+Callback Function OnSetNameFb(String value)                 { Name_FB = value; }
+Callback Function OnSetLocationFb(String value)             { Location_FB = value; }
+Callback Function OnSetPositionFb(String value)             { Position_FB = value; }
+Callback Function OnSetVersionFb(String value)              { Version_FB = value; }
+Callback Function OnSetSerialFb(String value)               { Serial_FB = value; }
+Callback Function OnSetProductFb(String value)              { Product_FB = value; }
+Callback Function OnSetMacAddressesFb(String value)         { Mac_Addresses_FB = value; }
+Callback Function OnSetIncomingCommandFb(String value)      { Incoming_Command_FB = value; }
+
+Callback Function OnSetIdentifyingFb(Integer value)         { Identifying_FB = value; }
+Callback Function OnSetCustomLedActiveFb(Integer value)     { Custom_Led_Active_FB = value; }
+Callback Function OnSetCustomLedColorFb(Integer value)      { Custom_Led_Color_FB = value; }
+Callback Function OnSetMicMuteLedColorFb(Integer value)     { Mic_Mute_Led_Color_FB = value; }
+Callback Function OnSetMicOnLedColorFb(Integer value)       { Mic_On_Led_Color_FB = value; }
+Callback Function OnSetLedBrightnessFb(Integer value)       { Led_Brightness_FB = value; }
+Callback Function OnSetMuteFb(Integer value)                { Mute_On_FB = value; }
+Callback Function OnSetExclusionZoneActiveFb(Integer value) { Exclusion_Zone_Active_FB = value; }
+Callback Function OnSetDanteOutputGainFb(Integer value)     { Dante_Output_Gain_FB = value; }
+Callback Function OnSetSpeakerDetectionThresholdFb(Integer value) { Speaker_Detection_Threshold_FB = value; }
+Callback Function OnSetDanteMacAddressesFb(String value)    { Dante_Mac_Addresses_FB = value; }
+Callback Function OnSetDanteIpAddressesFb(String value)     { Dante_Ip_Addresses_FB = value; }
+Callback Function OnSetAzimuthFb(Integer value)             { Beam_Azimuth_Degrees_FB = value; }
+Callback Function OnSetElevationFb(Integer value)           { Beam_Elevation_Degrees_FB = value; }
+Callback Function OnSetInputPeakLevelFb(Signed_Integer value) { Input_Peak_Level_FB = value; }
+
+/*******************************************************************************************
+  Event Handlers
+*******************************************************************************************/
+PUSH Connect                            { _device.Connect(); }
+RELEASE Connect                         { _device.Disconnect(); }
+
+CHANGE Debug                            { _device.Debug = Debug; }
+CHANGE Enable_Incoming_Commands         { _device.IncomingCommandEnabled = Enable_Incoming_Commands; }
+
+CHANGE Enable_Beam_Azimuth_Feedback     { _device.EnableAzimuthFeedback(Enable_Beam_Azimuth_Feedback); }
+CHANGE Enable_Beam_Elevation_Feedback   { _device.EnableElevationFeedback(Enable_Beam_Elevation_Feedback); }
+CHANGE Enable_Input_Peak_Level_Feedback { _device.EnableInputPeakLevelFeedback(Enable_Input_Peak_Level_Feedback); }
+
+PUSH Identify_On                        { _device.SetIdentify(1); }
+PUSH Identify_Off                       { _device.SetIdentify(0); }
+PUSH Identify_Toggle                    { _device.IdentifyToggle(); }
+
+PUSH Mute_On                            { _device.SetMute(1); }
+PUSH Mute_Off                           { _device.SetMute(0); }
+PUSH Mute_Toggle                        { _device.MuteToggle(); }
+
+PUSH Exclusion_Zone_Active              { _device.SetExclusionZoneActive(1); }
+PUSH Exclusion_Zone_Inactive            { _device.SetExclusionZoneActive(0); }
+PUSH Exclusion_Zone_Active_Toggle       { _device.ExclusionZoneActiveToggle(); }
+
+PUSH Custom_Led_Active                  { _device.SetCustomLedActive(1); }
+PUSH Custom_Led_Inactive                { _device.SetCustomLedActive(0); }
+PUSH Custom_Led_Active_Toggle           { _device.CustomLedActiveToggle(); }
+
+CHANGE Custom_Led_Color                 { _device.SetCustomLedColor(Custom_Led_Color); }
+CHANGE Mic_Mute_Led_Color               { _device.SetMicMuteLedColor(Mic_Mute_Led_Color); }
+CHANGE Mic_On_Led_Color                 { _device.SetMicOnLedColor(Mic_On_Led_Color); }
+CHANGE Led_Brightness                   { _device.SetLedBrightness(Led_Brightness); }
+
+CHANGE Dante_Output_Gain                { _device.SetDanteOutputGain(Dante_Output_Gain); }
+CHANGE Speaker_Detection_Threshold      { _device.SetSpeakerDetectionThreshold(Dante_Output_Gain); }
+
+CHANGE Set_Name                         { _device.SetName(Set_Name); }
+CHANGE Set_Location                     { _device.SetLocation(Set_Location); }
+CHANGE Set_Position                     { _device.SetPosition(Set_Position); }
+
+CHANGE Device_IP                        { _device.Ip = Device_IP; }
+CHANGE Device_UDP_Port                  { _device.Port = Atoi(Device_UDP_Port); }
+
+CHANGE Send_Custom_Command              { _device.Send(Send_Custom_Command); }
+
+/*******************************************************************************************
+  Main()
+*******************************************************************************************/
+Function Main()
+{
+    _device.Ip = Device_IP_Param;
+    _device.Port = Device_UDP_Port_Param;
+
+    RegisterDelegate(_device, SetRespondingFb, OnSetRespondingFb);
+    RegisterDelegate(_device, SetNameFb, OnSetNameFb);
+    RegisterDelegate(_device, SetLocationFb, OnSetLocationFb);
+    RegisterDelegate(_device, SetPositionFb, OnSetPositionFb);
+    RegisterDelegate(_device, SetVersionFb, OnSetVersionFb);
+    RegisterDelegate(_device, SetSerialFb, OnSetSerialFb);
+    RegisterDelegate(_device, SetProductFb, OnSetProductFb);
+    RegisterDelegate(_device, SetMacAddressesFb, OnSetMacAddressesFb);
+    RegisterDelegate(_device, SetIncomingCommandFb, OnSetIncomingCommandFb);
+
+    RegisterDelegate(_device, SetIdentifyingFb, OnSetIdentifyingFb);
+    RegisterDelegate(_device, SetCustomLedActiveFb, OnSetCustomLedActiveFb);
+    RegisterDelegate(_device, SetCustomLedColorFb, OnSetCustomLedColorFb);
+    RegisterDelegate(_device, SetMicMuteLedColorFb, OnSetMicMuteLedColorFb);
+    RegisterDelegate(_device, SetMicOnLedColorFb, OnSetMicOnLedColorFb);
+    RegisterDelegate(_device, SetLedBrightnessFb, OnSetLedBrightnessFb);
+    RegisterDelegate(_device, SetMuteFb, OnSetMuteFb);
+    RegisterDelegate(_device, SetExclusionZoneActiveFb, OnSetExclusionZoneActiveFb);
+    RegisterDelegate(_device, SetDanteOutputGainFb, OnSetDanteOutputGainFb);
+    RegisterDelegate(_device, SetSpeakerDetectionThresholdFb, OnSetSpeakerDetectionThresholdFb);
+    RegisterDelegate(_device, SetDanteMacAddressesFb, OnSetDanteMacAddressesFb);
+    RegisterDelegate(_device, SetDanteIpAddressesFb, OnSetDanteIpAddressesFb);
+    RegisterDelegate(_device, SetAzimuthFb, OnSetAzimuthFb);
+    RegisterDelegate(_device, SetElevationFb, OnSetElevationFb);
+    RegisterDelegate(_device, SetInputPeakLevelFb, OnSetInputPeakLevelFb);
+
+    // WaitForInitializationComplete();
+}
+

@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Specialelektronik.Products.Sennheiser.SscLib", "Specialelektronik.Products.Sennheiser.SscLib\Specialelektronik.Products.Sennheiser.SscLib.csproj", "{48E6270F-6683-456C-BEA7-E17512CB2CA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Specialelektronik.Products.Sennheiser.Test", "Specialelektronik.Products.Sennheiser.Test\Specialelektronik.Products.Sennheiser.Test.csproj", "{02712AC7-92EE-4AA4-A63C-59DA02A88366}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sennheiser_Modules_CSharp", "Sennheiser_Modules_CSharp\Sennheiser_Modules_CSharp.csproj", "{4A5A54ED-6AA3-4B44-9163-9A51A2D2AD49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Specialelektronik.Products.Sennheiser.Devices", "Specialelektronik.Products.Sennheiser.Devices\Specialelektronik.Products.Sennheiser.Devices.csproj", "{66119FC5-A8F7-4524-885E-DF589CCF5033}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{48E6270F-6683-456C-BEA7-E17512CB2CA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48E6270F-6683-456C-BEA7-E17512CB2CA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48E6270F-6683-456C-BEA7-E17512CB2CA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48E6270F-6683-456C-BEA7-E17512CB2CA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02712AC7-92EE-4AA4-A63C-59DA02A88366}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02712AC7-92EE-4AA4-A63C-59DA02A88366}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02712AC7-92EE-4AA4-A63C-59DA02A88366}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02712AC7-92EE-4AA4-A63C-59DA02A88366}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A5A54ED-6AA3-4B44-9163-9A51A2D2AD49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A5A54ED-6AA3-4B44-9163-9A51A2D2AD49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A5A54ED-6AA3-4B44-9163-9A51A2D2AD49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A5A54ED-6AA3-4B44-9163-9A51A2D2AD49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66119FC5-A8F7-4524-885E-DF589CCF5033}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66119FC5-A8F7-4524-885E-DF589CCF5033}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66119FC5-A8F7-4524-885E-DF589CCF5033}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66119FC5-A8F7-4524-885E-DF589CCF5033}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

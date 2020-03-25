@@ -1,0 +1,265 @@
+/*
+Dealer Name: JaDeVa AB
+Programmer: Niklas Olsson
+*/
+
+/*******************************************************************************************
+  Compiler Directives
+*******************************************************************************************/
+// #DEFINE_CONSTANT
+#CATEGORY "46" "Sennheiser"
+#HELP_PDF_FILE "Sennheiser_SLDW_1.0.0_SE.pdf"
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+
+#HELP_BEGIN
+#HELP_END
+
+
+/*******************************************************************************************
+  Include Libraries
+*******************************************************************************************/
+#INCLUDEPATH "..\\SIMPL SHARP\\Sennheiser_Modules_CSharp\\bin\\Release"
+#USER_SIMPLSHARP_LIBRARY "Sennheiser_Modules_CSharp"
+
+/*******************************************************************************************
+  DIGITAL, ANALOG and SERIAL INPUTS and OUTPUTS
+*******************************************************************************************/
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT Connect;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT Debug;
+DIGITAL_INPUT Enable_Incoming_Commands;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT Enable_Rf_Quality_Feedback;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT Identify_On;
+DIGITAL_INPUT Identify_Off;
+DIGITAL_INPUT Identify_Toggle;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT Mute_Switch_Active;
+DIGITAL_INPUT Mute_Switch_Inactive;
+DIGITAL_INPUT Mute_Switch_Active_Toggle;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT Low_Cut_On;
+DIGITAL_INPUT Low_Cut_Off;
+DIGITAL_INPUT Low_Cut_Toggle;
+ANALOG_INPUT _skip_;
+ANALOG_INPUT _skip_;
+ANALOG_INPUT _skip_;
+ANALOG_INPUT _skip_;
+ANALOG_INPUT Brightness;
+ANALOG_INPUT _skip_;
+ANALOG_INPUT Output_Gain;
+ANALOG_INPUT Eq;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT Set_Name[8];
+STRING_INPUT Set_Group[8];
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT Send_Custom_Command[255];
+STRING_INPUT _skip_;
+STRING_INPUT Device_IP[15];
+STRING_INPUT Device_UDP_Port[5];
+
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT Responding_FB;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT Identifying_FB;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT Mute_Switch_Active_FB;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT Low_Cut_On_FB;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT TX_Active_FB;
+DIGITAL_OUTPUT TX_Charging_FB;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT Brightness_FB;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT Output_Gain_FB;
+ANALOG_OUTPUT Eq_FB;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT RF_Quality_FB;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT TX_Device_Type_FB;
+ANALOG_OUTPUT TX_Battery_Type_FB;
+ANALOG_OUTPUT TX_Battery_Gauge_FB;
+ANALOG_OUTPUT TX_Battery_Health_FB;
+ANALOG_OUTPUT TX_Battery_Lifetime_FB;
+STRING_OUTPUT _skip_;
+STRING_OUTPUT Name_FB;
+STRING_OUTPUT Group_FB;
+STRING_OUTPUT Product_FB;
+STRING_OUTPUT Version_FB;
+STRING_OUTPUT Serial_FB;
+STRING_OUTPUT Mac_Addresses_FB;
+STRING_OUTPUT _skip_;
+STRING_OUTPUT RX_Warnings_FB;
+STRING_OUTPUT TX_Warnings_FB;
+STRING_OUTPUT _skip_;
+STRING_OUTPUT Incoming_Command_FB;
+
+
+/*******************************************************************************************
+  Parameters
+*******************************************************************************************/
+STRING_PARAMETER Device_IP_Param[15];
+INTEGER_PARAMETER Device_UDP_Port_Param;
+
+/*******************************************************************************************
+  Parameter Properties
+*******************************************************************************************/
+#BEGIN_PARAMETER_PROPERTIES Device_IP_Param
+   propValidUnits = unitString;
+   propDefaultUnit = unitString;
+   propDefaultValue = "0.0.0.0";
+#END_PARAMETER_PROPERTIES
+#BEGIN_PARAMETER_PROPERTIES Device_UDP_Port_Param
+   propValidUnits = unitDecimal;
+   propDefaultUnit = unitDecimal;
+   propDefaultValue = 45d;
+#END_PARAMETER_PROPERTIES
+
+/*******************************************************************************************
+  Global Variables
+*******************************************************************************************/
+
+// INTEGER
+SldwSimplWrapper _device;
+
+/*******************************************************************************************
+  Functions
+*******************************************************************************************/
+
+Callback Function OnSetRespondingFb(Integer value)          { Responding_FB = value; }
+Callback Function OnSetNameFb(String value)                 { Name_FB = value; }
+Callback Function OnSetGroupFb(String value)                { Group_FB = value; }
+Callback Function OnSetVersionFb(String value)              { Version_FB = value; }
+Callback Function OnSetSerialFb(String value)               { Serial_FB = value; }
+Callback Function OnSetProductFb(String value)              { Product_FB = value; }
+Callback Function OnSetMacAddressesFb(String value)         { Mac_Addresses_FB = value; }
+Callback Function OnSetBrightnessFb(Integer value)          { Brightness_FB = value; }
+Callback Function OnSetIncomingCommandFb(String value)      { Incoming_Command_FB = value; }
+
+Callback Function OnSetIdentifyingFb(Integer value)         { Identifying_FB = value; }
+Callback Function OnSetRfQualityFb(Integer value)           { RF_Quality_FB = value; }
+Callback Function OnSetMuteSwitchActiveFb(Integer value)    { Mute_Switch_Active_FB = value; }
+Callback Function OnSetRxWarningsFb(String value)           { RX_Warnings_FB = value; }
+
+Callback Function OnSetTxActiveFb(Integer value)            { TX_Active_FB = value; }
+Callback Function OnSetTxDeviceTypeFb(Integer value)        { TX_Device_Type_FB = value; }
+Callback Function OnSetTxBatteryTypeFb(Integer value)       { TX_Battery_Type_FB = value; }
+Callback Function OnSetTxChargingFb(Integer value)          { TX_Charging_FB = value; }
+Callback Function OnSetTxBatteryGaugeFb(Integer value)      { TX_Battery_Gauge_FB = value; }
+Callback Function OnSetTxBatteryHealthFb(Integer value)     { TX_Battery_Health_FB = value; }
+Callback Function OnSetTxBatteryLifetimeFb(Integer value)   { TX_Battery_Lifetime_FB = value; }
+Callback Function OnSetTxWarningsFb(String value)           { TX_Warnings_FB = value; }
+
+Callback Function OnSetOutputGainFb(Integer value)          { Output_Gain_FB = value; }
+Callback Function OnSetEqFb(Integer value)                  { Eq_FB = value; }
+Callback Function OnSetLowCutFb(Integer value)              { Low_Cut_On_FB = value; }
+
+/*******************************************************************************************
+  Event Handlers
+*******************************************************************************************/
+PUSH Connect                        { _device.Connect(); }
+RELEASE Connect                     { _device.Disconnect(); }
+
+CHANGE Debug                        { _device.Debug = Debug; }
+CHANGE Enable_Incoming_Commands     { _device.IncomingCommandEnabled = Enable_Incoming_Commands; }
+
+CHANGE Enable_Rf_Quality_Feedback   { _device.EnableRfQualityFeedback(Enable_Rf_Quality_Feedback); }
+
+PUSH Identify_On                    { _device.SetIdentify(1); }
+PUSH Identify_Off                   { _device.SetIdentify(0); }
+PUSH Identify_Toggle                { _device.IdentifyToggle(); }
+
+PUSH Mute_Switch_Active             { _device.SetMuteSwitchActive(1); }
+PUSH Mute_Switch_Inactive           { _device.SetMuteSwitchActive(0); }
+PUSH Mute_Switch_Active_Toggle      { _device.MuteSwitchActiveToggle(); }
+
+PUSH Low_Cut_On                     { _device.SetLowCut(1); }
+PUSH Low_Cut_Off                    { _device.SetLowCut(0); }
+PUSH Low_Cut_Toggle                 { _device.LowCutToggle(); }
+
+CHANGE Brightness                   { _device.SetBrightness(Brightness); }
+CHANGE Output_Gain                  { _device.SetOutputGain(Output_Gain); }
+CHANGE Eq                           { _device.SetEq(Eq); }
+
+CHANGE Set_Name                     { _device.SetName(Set_Name); }
+CHANGE Set_Group                    { _device.SetGroup(Set_Group); }
+
+CHANGE Device_IP                    { _device.Ip = Device_IP; }
+CHANGE Device_UDP_Port              { _device.Port = Atoi(Device_UDP_Port); }
+
+CHANGE Send_Custom_Command          { _device.Send(Send_Custom_Command); }
+
+/*******************************************************************************************
+  Main()
+*******************************************************************************************/
+Function Main()
+{
+    _device.Ip = Device_IP_Param;
+    _device.Port = Device_UDP_Port_Param;
+    
+    RegisterDelegate(_device, SetRespondingFb, OnSetRespondingFb);
+    RegisterDelegate(_device, SetNameFb, OnSetNameFb);
+    RegisterDelegate(_device, SetGroupFb, OnSetGroupFb);
+    RegisterDelegate(_device, SetVersionFb, OnSetVersionFb);
+    RegisterDelegate(_device, SetSerialFb, OnSetSerialFb);
+    RegisterDelegate(_device, SetProductFb, OnSetProductFb);
+    RegisterDelegate(_device, SetMacAddressesFb, OnSetMacAddressesFb);
+    RegisterDelegate(_device, SetBrightnessFb, OnSetBrightnessFb);
+    RegisterDelegate(_device, SetIncomingCommandFb, OnSetIncomingCommandFb);
+
+    RegisterDelegate(_device, SetIdentifyingFb, OnSetIdentifyingFb);
+    RegisterDelegate(_device, SetRfQualityFb, OnSetRfQualityFb);
+    RegisterDelegate(_device, SetMuteSwitchActiveFb, OnSetMuteSwitchActiveFb);
+    RegisterDelegate(_device, SetRxWarningsFb, OnSetRxWarningsFb);
+
+    RegisterDelegate(_device, SetTxActiveFb, OnSetTxActiveFb);
+    RegisterDelegate(_device, SetTxDeviceTypeFb, OnSetTxDeviceTypeFb);
+    RegisterDelegate(_device, SetTxBatteryTypeFb, OnSetTxBatteryTypeFb);
+    RegisterDelegate(_device, SetTxChargingFb, OnSetTxChargingFb);
+    RegisterDelegate(_device, SetTxBatteryGaugeFb, OnSetTxBatteryGaugeFb);
+    RegisterDelegate(_device, SetTxBatteryHealthFb, OnSetTxBatteryHealthFb);
+    RegisterDelegate(_device, SetTxBatteryLifetimeFb, OnSetTxBatteryLifetimeFb);
+    RegisterDelegate(_device, SetTxWarningsFb, OnSetTxWarningsFb);
+
+    RegisterDelegate(_device, SetOutputGainFb, OnSetOutputGainFb);
+    RegisterDelegate(_device, SetEqFb, OnSetEqFb);
+    RegisterDelegate(_device, SetLowCutFb, OnSetLowCutFb);
+
+    // WaitForInitializationComplete();
+}
+
