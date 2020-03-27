@@ -53,7 +53,7 @@ Developed by Niklas Olsson - JaDeVa AB
     + [1.0.0 (Initial version)](#100--initial-version-)
 
 
-## How to I download the SIMPL+ modules and SIMPL Demo program
+## How to download the SIMPL+ modules and SIMPL Demo program
 1. Press the green **Clone or download** button in the top right, and select **Download ZIP**
 2. Open up the file and open the **SIMPL** directory.
 3. Use the `SennheiserDemo_CP3_compiled.zip`
@@ -94,10 +94,16 @@ SimplSharpNewtonsoft
 * When Sennheiser sends error messages, they sometimes have malformed JSON, so they can't be parsed as JSON. Because of that all errors from the devices are return to you as a string with the JSON in it. If you want to act based on an error you have to subscribe to the `Errors` event of the device and parse the data yourself.
 
 ## Getting started
+
+* Clone the repository.
+* Open the solution in the `SIMPL SHARP` directory.
+* Build the solution.
+
 Start up your S#Pro project and do the following:
 
 * Add references to the dependencies shown in the [Dependencies](#dependencies) section of this readme.
-* Add a reference to `Specialelektronik.Products.Sennheiser.Devices.dll`.
+* Add a reference to `Specialelektronik.Products.Sennheiser.Devices.dll` that you built in the steps above.
+* The namespace for the library is `Specialelektronik.Products.Sennheiser`.
 
 ## CHG 4N
 Class name: `Chg4N`
