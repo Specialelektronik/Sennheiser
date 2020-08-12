@@ -56,7 +56,7 @@ namespace Specialelektronik.Products.Sennheiser.SscLib
         
         UdpTransport _transport;
 
-        internal Dictionary<string, ABaseHandler> Handlers = new Dictionary<string, ABaseHandler>();
+        internal Dictionary<string, List<ABaseHandler>> Handlers = new Dictionary<string, List<ABaseHandler>>();
 
         /// <summary>
         /// This is the base class that all devices derive from.
@@ -97,7 +97,10 @@ namespace Specialelektronik.Products.Sennheiser.SscLib
 
         internal void AddHandler(string property, ABaseHandler handler)
         {
-            Handlers[property] = handler;
+            if (!Handlers.ContainsKey(property))
+                Handlers.Add(property, new List<ABaseHandler>());
+
+            Handlers[property].Add(handler);
         }
         
         void CommandReceivedCallback(string data)
@@ -131,13 +134,19 @@ namespace Specialelektronik.Products.Sennheiser.SscLib
             var json = JObject.Parse(data);
             var property = ((JProperty)json.First).Name;
 
-            ABaseHandler handler = null;
-            if (Handlers.TryGetValue(property, out handler))
+            List<ABaseHandler> handlers = null;
+            if (Handlers.TryGetValue(property, out handlers))
             {
                 if (json.First.First.HasValues)
-                    handler.HandleResponse((JObject)json.First.Children().First());
+                {
+                    foreach (var handler in handlers)
+                        handler.HandleResponse((JObject)json.First.Children().First());
+                }
                 else
-                    handler.HandleResponse(json);
+                {
+                    foreach (var handler in handlers)
+                        handler.HandleResponse(json);
+                }
             }
         }
         void ResponseTimerExpired(object o)

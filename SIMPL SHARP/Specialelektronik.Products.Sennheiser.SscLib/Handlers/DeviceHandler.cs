@@ -19,7 +19,7 @@ namespace Specialelektronik.Products.Sennheiser.SscLib
         /// <summary>
         /// Returns the base property of this handler, which is "device".
         /// </summary>
-        protected override string BaseProperty { get { return "device"; } }
+        protected override string BaseProperty { get { return base.BaseProperty; } }
 
         string _name = "";
         /// <summary>
@@ -54,7 +54,7 @@ namespace Specialelektronik.Products.Sennheiser.SscLib
         /// The base DeviceHandler. All other DeviceHandlers derive from this class.
         /// </summary>
         public DeviceHandler(SscCommon common)
-            : base(common)
+            : base(common, "device")
         {
             Handlers.Add("name", HandleName);
             Handlers.Add("identity", HandleIdentity);

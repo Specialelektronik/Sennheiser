@@ -38,6 +38,24 @@ namespace Specialelektronik.Products.Sennheiser
             get { return _serial; }
             internal set { _serial = value; } 
         }
+        string _ipei = "";
+        /// <summary>
+        /// IPEI of the inserted device.
+        /// </summary>
+        public string Ipei
+        {
+            get { return _ipei; }
+            internal set { _ipei = value; }
+        }
+        string _lastPairedRfpi = "";
+        /// <summary>
+        /// The RFPI the inserted device was last paired with.
+        /// </summary>
+        public string LastPairedRfpi
+        {
+            get { return _lastPairedRfpi; }
+            internal set { _lastPairedRfpi = value; }
+        }
         /// <summary>
         /// This is the level of power in the battery.
         /// 1.0 = full. 0.0 = Empty

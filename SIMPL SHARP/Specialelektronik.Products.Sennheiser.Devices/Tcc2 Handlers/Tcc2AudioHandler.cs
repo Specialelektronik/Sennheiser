@@ -16,7 +16,7 @@ namespace Specialelektronik.Products.Sennheiser
         /// <summary>
         /// Returns the base property of this handler, which is "audio".
         /// </summary>
-        protected override string BaseProperty { get { return "audio"; } }
+        protected override string BaseProperty { get { return base.BaseProperty; } }
         
         /// <summary>
         /// The available speaker detection threshold levels.
@@ -99,7 +99,7 @@ namespace Specialelektronik.Products.Sennheiser
         /// Contains features, properties and events regarding the audio output, such as Dante output gain and Mute.
         /// </summary>
         public Tcc2AudioHandler(SscCommon common)
-            : base(common)
+            : base(common, "audio")
         {
             Handlers.Add("exclusion_zone", HandleExclusionZone);
             Handlers.Add("out2", HandleDante);

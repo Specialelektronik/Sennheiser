@@ -99,6 +99,12 @@ namespace Specialelektronik.Products.Sennheiser.Test
                 case SldwRxEventArgs.eSldwRxEventType.Warnings:
                     _xpanel.StringInput[20].StringValue = e.StringValue;
                     break;
+                case SldwRxEventArgs.eSldwRxEventType.Rfpi:
+                    _xpanel.StringInput[24].StringValue = e.StringValue;
+                    break;
+                case SldwRxEventArgs.eSldwRxEventType.LastPairedIpei:
+                    _xpanel.StringInput[25].StringValue = e.StringValue;
+                    break;
             }
         }
         void TxHandler_Events(object sender, SldwTxEventArgs e)

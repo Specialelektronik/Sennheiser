@@ -16,7 +16,7 @@ namespace Specialelektronik.Products.Sennheiser
         /// <summary>
         /// Returns the base property of this handler, which is "mates".
         /// </summary>
-        protected override string BaseProperty { get { return "mates"; } }
+        protected override string BaseProperty { get { return base.BaseProperty; } }
 
         /// <summary>
         /// The available device types
@@ -84,7 +84,7 @@ namespace Specialelektronik.Products.Sennheiser
         /// Contains features, properties and events regarding the transmitting end (the microphone or bodypack), such as battery level.
         /// </summary>
         public SldwTxHandler(SscCommon common)
-            : base(common)
+            : base(common, "mates")
         {
             Warnings = "";
             DeviceType = eSldwTxDeviceType.Unknown;

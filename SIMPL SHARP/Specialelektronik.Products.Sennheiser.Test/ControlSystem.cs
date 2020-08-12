@@ -18,6 +18,7 @@ namespace Specialelektronik.Products.Sennheiser.Test
 
         public static Chg4N Charger;
         public static Sldw Receiver;
+        public static SlMcrDw Mcr;
         public static Tcc2 Tcc;
 
         public ControlSystem()
@@ -43,7 +44,6 @@ namespace Specialelektronik.Products.Sennheiser.Test
                 Charger.Errors += new EventHandler<SscErrorEventArgs>(Errors);
                 Charger.BaysHandler.Events += new EventHandler<Chg4NBaysEventArgs>(ChargerBaysHandler_Events);
                 Charger.DeviceHandler.Events += new EventHandler<Chg4NDeviceEventArgs>(ChargerDeviceHandler_Events);
-                //Charger.Debug = true;
 
                 Receiver = new Sldw();
                 Receiver.Errors += new EventHandler<SscErrorEventArgs>(Errors);
@@ -52,7 +52,6 @@ namespace Specialelektronik.Products.Sennheiser.Test
                 Receiver.TxHandler.Events += new EventHandler<SldwTxEventArgs>(ReceiverTxHandler_Events);
                 Receiver.AudioHandler.Events += new EventHandler<SldwAudioEventArgs>(ReceiverAudioHandler_Events);
                 Receiver.RxHandler.EnableRfQualityFeedback();
-                //Receiver.Debug = true;
 
                 Tcc = new Tcc2();
                 Tcc.Errors += new EventHandler<SscErrorEventArgs>(Errors);
@@ -63,25 +62,43 @@ namespace Specialelektronik.Products.Sennheiser.Test
                 Tcc.MeterHandler.EnableElevationFeedback();
                 Tcc.MeterHandler.EnableInputPeakLevelFeedback();
 
+                Mcr = new SlMcrDw(4);
+                Mcr.Errors += new EventHandler<SscErrorEventArgs>(Errors);
+                Mcr.DeviceHandler.Events += new EventHandler<SlMcrDwDeviceEventArgs>(McrDeviceHandler_Events);
+                Mcr.AudioHandler.Events += new EventHandler<SlMcrDwAudioEventArgs>(McrAudioHandler_Events);
+                Mcr.MeterHandler.Events += new EventHandler<SlMcrDwMeterEventArgs>(MeterHandler_Events);
+                Mcr.MeterHandler.EnableMixerLevelFeedback();
+                Mcr.MeterHandler.EnableRxInputLevelFeedbacks();
+                foreach (var handler in Mcr.RxHandlers)
+                {
+                    handler.EnableRfQualityFeedback();
+                    handler.Events += new EventHandler<SlMcrDwRxEventArgs>(McrRxHandler_Events);
+                }
+                foreach (var handler in Mcr.TxHandlers)
+                    handler.Events += new EventHandler<SlMcrDwTxEventArgs>(McrTxHandler_Events);
+
                 _xpanel = new Xpanel(0x03);
 
-                Charger.Connect("192.168.10.135");
-                Receiver.Connect("192.168.10.136");
+                Charger.Connect("192.168.9.27");
+                Receiver.Connect("192.168.9.29");
                 Tcc.Connect("192.168.10.133");
+                Mcr.Connect("10.54.20.236");
 
                 CrestronConsole.AddNewConsoleCommand(cmd =>
                 {
                     if (cmd.ToLower() == "on")
                     {
-                        Charger.Debug = true;
-                        Receiver.Debug = true;
-                        Tcc.Debug = true;
+                        //Charger.Debug = true;
+                        //Receiver.Debug = true;
+                        //Tcc.Debug = true;
+                        Mcr.Debug = true;
                     }
                     else if (cmd.ToLower() == "off")
                     {
-                        Charger.Debug = false;
-                        Receiver.Debug = false;
-                        Tcc.Debug = false;
+                        //Charger.Debug = false;
+                        //Receiver.Debug = false;
+                        //Tcc.Debug = false;
+                        Mcr.Debug = false;
                     }
                 }, "sennheiserdebug", "usage: sennheiserdebug <on/off>", ConsoleAccessLevelEnum.AccessOperator);
             }
@@ -135,6 +152,27 @@ namespace Specialelektronik.Products.Sennheiser.Test
             CrestronConsole.PrintLine(e.ToString());
         }
 
+        void McrDeviceHandler_Events(object sender, SlMcrDwDeviceEventArgs e)
+        {
+            CrestronConsole.PrintLine(e.ToString());
+        }
+        void McrTxHandler_Events(object sender, SlMcrDwTxEventArgs e)
+        {
+            CrestronConsole.PrintLine(e.ToString());
+        }
+        void McrRxHandler_Events(object sender, SlMcrDwRxEventArgs e)
+        {
+            CrestronConsole.PrintLine(e.ToString());
+        }
+        void McrAudioHandler_Events(object sender, SlMcrDwAudioEventArgs e)
+        {
+            CrestronConsole.PrintLine(e.ToString());
+        }
+        void MeterHandler_Events(object sender, SlMcrDwMeterEventArgs e)
+        {
+            //CrestronConsole.PrintLine(e.ToString());
+        }
+
         void ControlSystem_ControllerProgramEventHandler(eProgramStatusEventType programStatusEventType)
         {
             switch (programStatusEventType)
@@ -146,6 +184,8 @@ namespace Specialelektronik.Products.Sennheiser.Test
                         Receiver.Dispose();
                     if (Tcc != null)
                         Tcc.Dispose();
+                    if (Mcr != null)
+                        Mcr.Dispose();
                     break;
             }
 

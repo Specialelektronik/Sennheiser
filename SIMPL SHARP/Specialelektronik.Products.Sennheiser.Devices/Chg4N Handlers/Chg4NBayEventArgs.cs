@@ -22,6 +22,8 @@ namespace Specialelektronik.Products.Sennheiser
             BatteryHealth,
             MinutesToFull,
             DeviceType,
+            Ipei,
+            LastPairedRfpi,
         }
         /// <summary>
         /// The property that changed. It might have changed on any or all of the bays.
@@ -55,6 +57,10 @@ namespace Specialelektronik.Products.Sennheiser
                     return String.Format("Chg4NBaysEventArgs - Bays Charging, 1: {0}, 2: {1}, 3: {2}, 4: {3}", Bays[0].Charging, Bays[1].Charging, Bays[2].Charging, Bays[3].Charging);
                 case eChg4NBayEventType.Serial:
                     return String.Format("Chg4NBaysEventArgs - Bays Serial, 1: {0}, 2: {1}, 3: {2}, 4: {3}", Bays[0].Serial, Bays[1].Serial, Bays[2].Serial, Bays[3].Serial);
+                case eChg4NBayEventType.Ipei:
+                    return String.Format("Chg4NBaysEventArgs - Bays Ipei, 1: {0}, 2: {1}, 3: {2}, 4: {3}", Bays[0].Ipei, Bays[1].Ipei, Bays[2].Ipei, Bays[3].Ipei);
+                case eChg4NBayEventType.LastPairedRfpi:
+                    return String.Format("Chg4NBaysEventArgs - Bays LastPairedRfpi, 1: {0}, 2: {1}, 3: {2}, 4: {3}", Bays[0].LastPairedRfpi, Bays[1].LastPairedRfpi, Bays[2].LastPairedRfpi, Bays[3].LastPairedRfpi);
                 case eChg4NBayEventType.BatteryGauge:
                     return String.Format("Chg4NBaysEventArgs - Bays Battery Gauge, 1: {0}%, 2: {1}%, 3: {2}%, 4: {3}%", Bays[0].BatteryGauge * 100, Bays[1].BatteryGauge * 100, Bays[2].BatteryGauge * 100, Bays[3].BatteryGauge * 100);
                 case eChg4NBayEventType.BatteryHealth:

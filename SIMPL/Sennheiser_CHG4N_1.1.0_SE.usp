@@ -1,0 +1,215 @@
+/*
+Dealer Name: JaDeVa AB
+Programmer: Niklas Olsson
+*/
+
+/*******************************************************************************************
+  Compiler Directives
+*******************************************************************************************/
+// #DEFINE_CONSTANT
+#CATEGORY "46" "Sennheiser"
+#HELP_PDF_FILE "Sennheiser_CHG4N_1.1.0_SE.pdf"
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+
+#HELP_BEGIN
+#HELP_END
+
+
+/*******************************************************************************************
+  Include Libraries
+*******************************************************************************************/
+#INCLUDEPATH "..\\SIMPL SHARP\\Sennheiser_Modules_CSharp\\bin\\Release"
+#USER_SIMPLSHARP_LIBRARY "Sennheiser_Modules_CSharp"
+
+/*******************************************************************************************
+  DIGITAL, ANALOG and SERIAL INPUTS and OUTPUTS
+*******************************************************************************************/
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT Connect;
+DIGITAL_INPUT _skip_;
+DIGITAL_INPUT Debug;
+DIGITAL_INPUT Enable_Incoming_Commands;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT Set_Name[8];
+STRING_INPUT Set_Group[8];
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT _skip_;
+STRING_INPUT Send_Custom_Command[255];
+STRING_INPUT _skip_;
+STRING_INPUT Device_IP[15];
+STRING_INPUT Device_UDP_Port[5];
+
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT Responding_FB;
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT Bay_Active_FB[4];
+DIGITAL_OUTPUT _skip_;
+DIGITAL_OUTPUT Bay_Charging_FB[4,4];
+STRING_OUTPUT _skip_;
+STRING_OUTPUT Name_FB;
+STRING_OUTPUT Group_FB;
+STRING_OUTPUT Product_FB;
+STRING_OUTPUT Version_FB;
+STRING_OUTPUT Serial_FB;
+STRING_OUTPUT Mac_Addresses_FB;
+STRING_OUTPUT _skip_;
+STRING_OUTPUT Incoming_Command_FB;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT Bay_Battery_Gauge_FB[4];
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT Bay_Battery_Health_FB[4];
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT Bay_Minutes_To_Full_FB[4];
+ANALOG_OUTPUT _skip_;
+ANALOG_OUTPUT Bay_Device_Type_FB[4];
+STRING_OUTPUT _skip_;
+STRING_OUTPUT Bay_Serial_FB[4];
+STRING_OUTPUT _skip_;
+STRING_OUTPUT Bay_IPEI_FB[4];
+STRING_OUTPUT _skip_;
+STRING_OUTPUT Bay_Last_Paired_RFPI_FB[4,4];
+
+
+/*******************************************************************************************
+  Parameters
+*******************************************************************************************/
+STRING_PARAMETER Device_IP_Param[15];
+INTEGER_PARAMETER Device_UDP_Port_Param;
+
+/*******************************************************************************************
+  Parameter Properties
+*******************************************************************************************/
+#BEGIN_PARAMETER_PROPERTIES Device_IP_Param
+   propValidUnits = unitString;
+   propDefaultUnit = unitString;
+   propDefaultValue = "0.0.0.0";
+#END_PARAMETER_PROPERTIES
+#BEGIN_PARAMETER_PROPERTIES Device_UDP_Port_Param
+   propValidUnits = unitDecimal;
+   propDefaultUnit = unitDecimal;
+   propDefaultValue = 45d;
+#END_PARAMETER_PROPERTIES
+
+/*******************************************************************************************
+  Global Variables
+*******************************************************************************************/
+
+// INTEGER
+Chg4NSimplWrapper _device;
+
+/*******************************************************************************************
+  Functions
+*******************************************************************************************/
+
+Callback Function OnSetRespondingFb(Integer value)      { Responding_FB = value; }
+Callback Function OnSetNameFb(String value)             { Name_FB = value; }
+Callback Function OnSetGroupFb(String value)            { Group_FB = value; }
+Callback Function OnSetVersionFb(String value)          { Version_FB = value; }
+Callback Function OnSetSerialFb(String value)           { Serial_FB = value; }
+Callback Function OnSetProductFb(String value)          { Product_FB = value; }
+Callback Function OnSetMacAddressesFb(String value)     { Mac_Addresses_FB = value; }
+Callback Function OnSetIncomingCommandFb(String value)  { Incoming_Command_FB = value; }
+
+Callback Function OnSetBayActiveFb(Integer index, Integer value)
+{
+    Bay_Active_FB[index + 1] = value;
+}
+Callback Function OnSetBayChargingFb(Integer index, Integer value)
+{
+    Bay_Charging_FB[index + 1] = value;
+}
+Callback Function OnSetBaySerialFb(Integer index, String value)
+{
+    Bay_Serial_FB[index + 1] = value;
+}
+Callback Function OnSetBayBatteryGauge(Integer index, Integer value)
+{
+    Bay_Battery_Gauge_FB[index + 1] = value;
+}
+Callback Function OnSetBayBatteryHealth(Integer index, Integer value)
+{
+    Bay_Battery_Health_FB[index + 1] = value;
+}
+Callback Function OnSetBayMinutesToFull(Integer index, Integer value)
+{
+    Bay_Minutes_To_Full_FB[index + 1] = value;
+}
+Callback Function OnSetBayDeviceType(Integer index, Integer value)
+{
+    Bay_Device_Type_FB[index + 1] = value;
+}
+Callback Function OnSetBayIpeiFb(Integer index, String value)
+{
+    Bay_IPEI_FB[index + 1] = value;
+}
+Callback Function OnSetBayLastPairedRfpiFb(Integer index, String value)
+{
+    Bay_Last_Paired_RFPI_FB[index + 1] = value;
+}
+/*******************************************************************************************
+  Event Handlers
+*******************************************************************************************/
+PUSH Connect                        { _device.Connect(); }
+RELEASE Connect                     { _device.Disconnect(); }
+
+CHANGE Debug                        { _device.Debug = Debug; }
+CHANGE Enable_Incoming_Commands     { _device.IncomingCommandEnabled = Enable_Incoming_Commands; }
+
+CHANGE Set_Name                     { _device.SetName(Set_Name); }
+CHANGE Set_Group                    { _device.SetGroup(Set_Group); }
+
+CHANGE Device_IP                    { _device.Ip = Device_IP; }
+CHANGE Device_UDP_Port              { _device.Port = Atoi(Device_UDP_Port); }
+
+CHANGE Send_Custom_Command          { _device.Send(Send_Custom_Command); }
+
+/*******************************************************************************************
+  Main()
+*******************************************************************************************/
+Function Main()
+{
+    _device.Ip = Device_IP_Param;
+    _device.Port = Device_UDP_Port_Param;
+
+    RegisterDelegate(_device, SetRespondingFb, OnSetRespondingFb);
+    RegisterDelegate(_device, SetNameFb, OnSetNameFb);
+    RegisterDelegate(_device, SetGroupFb, OnSetGroupFb);
+    RegisterDelegate(_device, SetVersionFb, OnSetVersionFb);
+    RegisterDelegate(_device, SetSerialFb, OnSetSerialFb);
+    RegisterDelegate(_device, SetProductFb, OnSetProductFb);
+    RegisterDelegate(_device, SetMacAddressesFb, OnSetMacAddressesFb);
+    RegisterDelegate(_device, SetIncomingCommandFb, OnSetIncomingCommandFb);
+
+    RegisterDelegate(_device, SetBayActiveFb, OnSetBayActiveFb);
+    RegisterDelegate(_device, SetBayChargingFb, OnSetBayChargingFb);
+    RegisterDelegate(_device, SetBaySerialFb, OnSetBaySerialFb);
+    RegisterDelegate(_device, SetBayBatteryGauge, OnSetBayBatteryGauge);
+    RegisterDelegate(_device, SetBayBatteryHealth, OnSetBayBatteryHealth);
+    RegisterDelegate(_device, SetBayMinutesToFull, OnSetBayMinutesToFull);
+    RegisterDelegate(_device, SetBayDeviceType, OnSetBayDeviceType);
+    RegisterDelegate(_device, SetBayIpeiFb, OnSetBayIpeiFb);
+    RegisterDelegate(_device, SetBayLastPairedRfpiFb, OnSetBayLastPairedRfpiFb);
+
+    // WaitForInitializationComplete();
+}
+

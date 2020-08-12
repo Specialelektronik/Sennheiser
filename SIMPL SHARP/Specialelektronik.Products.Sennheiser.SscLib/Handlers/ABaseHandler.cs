@@ -16,7 +16,7 @@ namespace Specialelektronik.Products.Sennheiser.SscLib
         /// Example: The DeviceHandler handles commands where the part starts with "device". The BaseProperty of DeviceHandler is "device".
         /// {"device":{"reset":true}}
         /// </summary>
-        protected abstract string BaseProperty { get; }
+        protected virtual string BaseProperty { get; private set; }
         /// <summary>
         /// Contains all sub level handlers, where the key is the second level name of the SSC command path.
         /// Example: We have the following command: {"device":{"reset":true}}. We would then add a handler for "reset" that parses and takes care of that.
@@ -31,8 +31,10 @@ namespace Specialelektronik.Products.Sennheiser.SscLib
         /// <summary>
         /// All handlers must derive from this class.
         /// </summary>
-        public ABaseHandler(SscCommon common)
+        public ABaseHandler(SscCommon common, string baseProperty)
         {
+            BaseProperty = baseProperty;
+
             Common = common;
             Common.Responding += new EventHandler<SscRespondingEventArgs>(Common_Responding);
             common.AddHandler(BaseProperty, this);

@@ -15,7 +15,7 @@ namespace Specialelektronik.Products.Sennheiser
         /// <summary>
         /// Returns the base property of this handler, which is "bays".
         /// </summary>
-        protected override string BaseProperty { get { return "bays"; } }
+        protected override string BaseProperty { get { return base.BaseProperty; } }
 
         /// <summary>
         /// This will be trigged when any of the properties of this handler changes.
@@ -32,7 +32,7 @@ namespace Specialelektronik.Products.Sennheiser
         /// Contains features, properties and events regarding the charging bays and the devices inserted into the bays.
         /// </summary>
         public Chg4NBaysHandler(SscCommon common)
-            : base(common)
+            : base(common, "bays")
         {
             for (int i = 0; i < _bays.Length; i++)
                 _bays[i] = new Chg4NBay();
@@ -44,6 +44,8 @@ namespace Specialelektronik.Products.Sennheiser
             Handlers.Add("bat_health", HandleBatteryHealth);
             Handlers.Add("bat_timetofull", HandleBatteryTimeToFull);
             Handlers.Add("device_type", HandleDeviceType);
+            Handlers.Add("ipei", HandleIpei);
+            Handlers.Add("last_paired_rfpi", HandleLastPairedRfpi);
 
             Subscribe(BaseProperty, "active");
             Subscribe(BaseProperty, "serial");
@@ -52,6 +54,8 @@ namespace Specialelektronik.Products.Sennheiser
             Subscribe(BaseProperty, "bat_timetofull");
             Subscribe(BaseProperty, "bat_health");
             Subscribe(BaseProperty, "device_type");
+            Subscribe(BaseProperty, "ipei");
+            Subscribe(BaseProperty, "last_paired_rfpi");
         }
 
         void HandleActive(JContainer json)
@@ -165,6 +169,38 @@ namespace Specialelektronik.Products.Sennheiser
             }
             if (changed)
                 TrigEvent(Chg4NBaysEventArgs.eChg4NBayEventType.DeviceType);
+        }
+        void HandleIpei(JContainer json)
+        {
+            var obj = (JArray)json.First;
+            var changed = false;
+            for (int i = 0; i < obj.Count; i++)
+            {
+                var val = obj[i].Value<string>();
+                if (val != _bays[i].Ipei)
+                {
+                    changed = true;
+                    _bays[i].Ipei = val;
+                }
+            }
+            if (changed)
+                TrigEvent(Chg4NBaysEventArgs.eChg4NBayEventType.Ipei);
+        }
+        void HandleLastPairedRfpi(JContainer json)
+        {
+            var obj = (JArray)json.First;
+            var changed = false;
+            for (int i = 0; i < obj.Count; i++)
+            {
+                var val = obj[i].Value<string>();
+                if (val != _bays[i].LastPairedRfpi)
+                {
+                    changed = true;
+                    _bays[i].LastPairedRfpi = val;
+                }
+            }
+            if (changed)
+                TrigEvent(Chg4NBaysEventArgs.eChg4NBayEventType.LastPairedRfpi);
         }
 
         void TrigEvent(Chg4NBaysEventArgs.eChg4NBayEventType type)

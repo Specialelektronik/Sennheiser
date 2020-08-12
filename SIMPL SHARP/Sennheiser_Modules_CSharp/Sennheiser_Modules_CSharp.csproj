@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Chg4NSimplWrapper.cs" />
+    <Compile Include="SlMcrDwSimplWrapper.cs" />
     <Compile Include="Tcc2SimplWrapper.cs" />
     <Compile Include="SimplWrapperBase.cs" />
     <Compile Include="SldwSimplWrapper.cs" />

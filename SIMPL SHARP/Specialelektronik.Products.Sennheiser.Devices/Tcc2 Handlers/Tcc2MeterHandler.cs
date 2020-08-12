@@ -16,7 +16,7 @@ namespace Specialelektronik.Products.Sennheiser
         /// <summary>
         /// Returns the base property of this handler, which is "m".
         /// </summary>
-        protected override string BaseProperty { get { return "m"; } }
+        protected override string BaseProperty { get { return base.BaseProperty; } }
 
         /// <summary>
         /// This will be trigged when any of the properties of this handler changes.
@@ -40,7 +40,7 @@ namespace Specialelektronik.Products.Sennheiser
         /// Contains features, properties and events regarding meters, such as azimuth, elevation and input peak level.
         /// </summary>
         public Tcc2MeterHandler(SscCommon common)
-            : base(common)
+            : base(common, "m")
         {
             Handlers.Add("beam", HandleBeam);
             Handlers.Add("in1", HandleIn);

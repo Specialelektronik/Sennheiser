@@ -15,6 +15,8 @@ namespace Sennheiser_Modules_CSharp
         public UShortDelegate SetRfQualityFb { get; set; }
         public UShortDelegate SetMuteSwitchActiveFb { get; set; }
         public StringDelegate SetRxWarningsFb { get; set; }
+        public StringDelegate SetRfpiFb { get; set; }
+        public StringDelegate SetLastPairedIpeiFb { get; set; }
 
         public UShortDelegate SetTxActiveFb { get; set; }
         public UShortDelegate SetTxDeviceTypeFb { get; set; }
@@ -135,6 +137,12 @@ namespace Sennheiser_Modules_CSharp
                     break;
                 case SldwRxEventArgs.eSldwRxEventType.Warnings:
                     SetRxWarningsFb(e.StringValue);
+                    break;
+                case SldwRxEventArgs.eSldwRxEventType.Rfpi:
+                    SetRfpiFb(e.StringValue);
+                    break;
+                case SldwRxEventArgs.eSldwRxEventType.LastPairedIpei:
+                    SetLastPairedIpeiFb(e.StringValue);
                     break;
             }
         }

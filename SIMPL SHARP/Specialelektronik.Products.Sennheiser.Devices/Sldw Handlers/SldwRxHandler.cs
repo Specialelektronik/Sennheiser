@@ -16,7 +16,7 @@ namespace Specialelektronik.Products.Sennheiser
         /// <summary>
         /// Returns the base property of this handler, which is "rx1".
         /// </summary>
-        protected override string BaseProperty { get { return "rx1"; } }
+        protected override string BaseProperty { get { return base.BaseProperty; } }
 
         /*
         /// <summary>
@@ -70,6 +70,18 @@ namespace Specialelektronik.Products.Sennheiser
         /// Example: "Bad Link".
         /// </summary>
         public string Warnings { get; private set; }
+
+        /// <summary>
+        /// The RFPI of this channel
+        /// Example: "028112cf28"
+        /// </summary>
+        public string Rfpi { get; private set; }
+
+        /// <summary>
+        ///  The IPEI of the (last) connected portable device
+        ///  Example: "028110a938"
+        /// </summary>
+        public string LastPairedIpei { get; private set; }
         /*
         eSldwRxMuteMode _muteMode;
         public eSldwRxMuteMode MuteMode
@@ -95,18 +107,22 @@ namespace Specialelektronik.Products.Sennheiser
         /// Contains features, properties and events regarding the transmitting end (the microphone or bodypack), such as battery level.
         /// </summary>
         public SldwRxHandler(SscCommon common)
-            : base(common)
+            : base(common, "rx1")
         {
             Handlers.Add("identify", HandleIdentify);
             Handlers.Add("rf_quality", HandleRfQuality);
             Handlers.Add("mute_switch_active", HandleMuteSwitchActive);
             Handlers.Add("warnings", HandleWarnings);
+            Handlers.Add("rfpi", HandleRfpi);
+            Handlers.Add("last_paired_ipei", HandleLastPairedIpei);
             //Handlers.Add("mute_mode", HandleMuteMode);
             //Handlers.Add("mute_state", HandleMuteState);
 
             Subscribe(BaseProperty, "identify");
             Subscribe(BaseProperty, "mute_switch_active");
             Subscribe(BaseProperty, "warnings");
+            Subscribe(BaseProperty, "rfpi");
+            Subscribe(BaseProperty, "last_paired_ipei");
             //Subscribe(BaseProperty, "mute_mode");
             //Subscribe(BaseProperty, "mute_state");
         }
@@ -163,9 +179,27 @@ namespace Specialelektronik.Products.Sennheiser
             if (Warnings != value)
             {
                 Warnings = value;
-                var ev = Events;
-                if (ev != null)
-                    ev(this, new SldwRxEventArgs(SldwRxEventArgs.eSldwRxEventType.Warnings, value));
+                TrigEvent(SldwRxEventArgs.eSldwRxEventType.Warnings, value);
+            }
+        }
+        void HandleRfpi(JContainer json)
+        {
+            var obj = (JProperty)json;
+            var value = obj.Value.ToString();
+            if (Rfpi != value)
+            {
+                Rfpi = value;
+                TrigEvent(SldwRxEventArgs.eSldwRxEventType.Rfpi, value);
+            }
+        }
+        void HandleLastPairedIpei(JContainer json)
+        {
+            var obj = (JProperty)json;
+            var value = obj.Value.ToString();
+            if (LastPairedIpei != value)
+            {
+                LastPairedIpei = value;
+                TrigEvent(SldwRxEventArgs.eSldwRxEventType.LastPairedIpei, value);
             }
         }
         /*
@@ -197,6 +231,12 @@ namespace Specialelektronik.Products.Sennheiser
                 ev(this, new SldwRxEventArgs(type, value));
         }
         void TrigEvent(SldwRxEventArgs.eSldwRxEventType type, double value)
+        {
+            var ev = Events;
+            if (ev != null)
+                ev(this, new SldwRxEventArgs(type, value));
+        }
+        void TrigEvent(SldwRxEventArgs.eSldwRxEventType type, string value)
         {
             var ev = Events;
             if (ev != null)

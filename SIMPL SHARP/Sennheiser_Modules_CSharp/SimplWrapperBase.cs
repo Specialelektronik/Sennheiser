@@ -8,6 +8,7 @@ using Specialelektronik.Products.Sennheiser.SscLib;
 namespace Sennheiser_Modules_CSharp
 {
     public delegate void ShortDelegate(short value);
+    public delegate void ShortDelegateIndex(ushort index, short value);
     public delegate void UShortDelegate(ushort value);
     public delegate void UShortDelegateIndex(ushort index, ushort value);
     public delegate void StringDelegate(SimplSharpString value);
@@ -51,7 +52,15 @@ namespace Sennheiser_Modules_CSharp
 
         protected T Device;
 
+        public SimplWrapperBase()
+        {
+
+        }
         public SimplWrapperBase(T device)
+        {
+            Init(device);
+        }
+        protected void Init(T device)
         {
             Device = device;
             Device.Responding += new EventHandler<SscRespondingEventArgs>(_device_Responding);

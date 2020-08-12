@@ -83,6 +83,14 @@ namespace Specialelektronik.Products.Sennheiser.Test
                     for (int i = 0; i < _charger.BaysHandler.Bays.Length; i++)
                         _xpanel.StringInput[(uint)(103 + i * 10)].StringValue = e.Bays[i].DeviceType.ToString();
                     break;
+                case Chg4NBaysEventArgs.eChg4NBayEventType.Ipei:
+                    for (int i = 0; i < _charger.BaysHandler.Bays.Length; i++)
+                        _xpanel.StringInput[(uint)(104 + i * 10)].StringValue = e.Bays[i].Ipei;
+                    break;
+                case Chg4NBaysEventArgs.eChg4NBayEventType.LastPairedRfpi:
+                    for (int i = 0; i < _charger.BaysHandler.Bays.Length; i++)
+                        _xpanel.StringInput[(uint)(105 + i * 10)].StringValue = e.Bays[i].LastPairedRfpi;
+                    break;
             }
         }
     }

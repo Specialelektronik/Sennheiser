@@ -16,7 +16,7 @@ namespace Specialelektronik.Products.Sennheiser
         /// <summary>
         /// Returns the base property of this handler, which is "audio".
         /// </summary>
-        protected override string BaseProperty { get { return "audio"; } }
+        protected override string BaseProperty { get { return base.BaseProperty; } }
 
         /// <summary>
         /// The available audio output gain levels.
@@ -90,7 +90,7 @@ namespace Specialelektronik.Products.Sennheiser
         /// Contains features, properties and events regarding the receiving end, such as Output gain and EQ.
         /// </summary>
         public SldwAudioHandler(SscCommon common)
-            : base(common)
+            : base(common, "audio")
         {
             Handlers.Add("out1", HandleOutput);
             Handlers.Add("equalizer", HandleEq);

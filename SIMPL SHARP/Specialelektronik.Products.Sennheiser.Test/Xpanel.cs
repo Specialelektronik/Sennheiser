@@ -16,6 +16,7 @@ namespace Specialelektronik.Products.Sennheiser.Test
         XpanelChargerPage _chargerPage;
         XpanelReceiverPage _receiverPage;
         XpanelTccPage _tccPage;
+        XpanelMcrPage _mcrPage;
 
         public Xpanel(uint ipId)
         {
@@ -27,6 +28,7 @@ namespace Specialelektronik.Products.Sennheiser.Test
             _chargerPage = new XpanelChargerPage(_xpanel);
             _receiverPage = new XpanelReceiverPage(_xpanel);
             _tccPage = new XpanelTccPage(_xpanel);
+            _mcrPage = new XpanelMcrPage(_xpanel);
         }
 
     }

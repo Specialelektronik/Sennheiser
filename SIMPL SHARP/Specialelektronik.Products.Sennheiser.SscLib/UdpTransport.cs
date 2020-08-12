@@ -22,7 +22,7 @@ namespace Specialelektronik.Products.Sennheiser.SscLib
 
         string _ip;
 
-        CrestronQueue<string> _queue = new CrestronQueue<string>(25);
+        CrestronQueue<string> _queue = new CrestronQueue<string>(100);
         object _workHandle;
         
         public UdpTransport(Action<string> commandReceivedAction, byte delimiter)
@@ -75,6 +75,8 @@ namespace Specialelektronik.Products.Sennheiser.SscLib
                                                   client.IPAddressLastMessageReceivedFrom,
                                                   new string(bytes.Select(b => (char)b).ToArray()).TrimEnd('\0'));
 
+                    //Following lines commented out as packets from newer Senneheiser devices does not contain a delimiter.
+                    /*
                     var index = -1;
                     while ((index = Array.IndexOf(bytes, _delimiter, index + 1)) >= 0)
                     {
@@ -83,6 +85,10 @@ namespace Specialelektronik.Products.Sennheiser.SscLib
 
                         _commandReceivedAction(cmd);
                     }
+                    */
+                    //Insted we just take the contents of the buffer, not caring about any delimiter.
+                    var cmd = new string(bytes.Select(b => (char)b).ToArray());
+                    _commandReceivedAction(cmd);
                 }
             }
             catch (Exception ex)

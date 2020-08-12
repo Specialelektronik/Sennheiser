@@ -17,6 +17,8 @@ namespace Sennheiser_Modules_CSharp
         public UShortDelegateIndex SetBayBatteryHealth { get; set; }
         public UShortDelegateIndex SetBayMinutesToFull { get; set; }
         public UShortDelegateIndex SetBayDeviceType { get; set; }
+        public StringDelegateIndex SetBayIpeiFb { get; set; }
+        public StringDelegateIndex SetBayLastPairedRfpiFb { get; set; }
 
         public Chg4NSimplWrapper()
             : base(new Chg4N())
@@ -90,6 +92,14 @@ namespace Sennheiser_Modules_CSharp
                 case Chg4NBaysEventArgs.eChg4NBayEventType.DeviceType:
                     for (ushort i = 0; i < e.Bays.Length; i++)
                         SetBayDeviceType(i, (ushort)e.Bays[i].DeviceType);
+                    break;
+                case Chg4NBaysEventArgs.eChg4NBayEventType.Ipei:
+                    for (ushort i = 0; i < e.Bays.Length; i++)
+                        SetBayIpeiFb(i, e.Bays[i].Ipei);
+                    break;
+                case Chg4NBaysEventArgs.eChg4NBayEventType.LastPairedRfpi:
+                    for (ushort i = 0; i < e.Bays.Length; i++)
+                        SetBayLastPairedRfpiFb(i, e.Bays[i].LastPairedRfpi);
                     break;
             }
         }

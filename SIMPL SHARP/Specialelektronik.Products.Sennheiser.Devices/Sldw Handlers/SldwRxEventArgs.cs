@@ -20,6 +20,8 @@ namespace Specialelektronik.Products.Sennheiser
             RfQuality,
             MuteSwitchActive,
             Warnings,
+            Rfpi,
+            LastPairedIpei,
             //MuteMode,
             //MuteState,
         }
@@ -32,11 +34,11 @@ namespace Specialelektronik.Products.Sennheiser
         /// </summary>
         public bool BoolValue { get; private set; }
         /// <summary>
-        /// Contains the new value of the property for event type `RfQuality`.
+        /// Contains the new value of the property for event type RfQuality.
         /// </summary>
         public double DoubleValue { get; private set; }
         /// <summary>
-        /// Contains the new value of the property for event type `Warnings`.
+        /// Contains the new value of the property for event type Warnings, Rfpi and LastPairedIpei.
         /// </summary>
         public string StringValue { get; private set; }
         //public SldwRxHandler.eSldwRxMuteMode MuteMode { get; private set; }
@@ -89,6 +91,8 @@ namespace Specialelektronik.Products.Sennheiser
                 case eSldwRxEventType.RfQuality:
                     return String.Format("SldwRxEventArgs - {0}: {1}", EventType, DoubleValue);
                 case eSldwRxEventType.Warnings:
+                case eSldwRxEventType.Rfpi:
+                case eSldwRxEventType.LastPairedIpei:
                     return String.Format("SldwRxEventArgs - {0}: {1}", EventType, StringValue);
                 default:
                     return "SldwRxEventArgs - Unknown Event Type";

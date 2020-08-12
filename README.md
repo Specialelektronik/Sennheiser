@@ -49,7 +49,28 @@ Developed by Niklas Olsson - JaDeVa AB
       - [DeviceHandler events](#devicehandler-events-2)
       - [MeterHandler events](#meterhandler-events)
       - [AudioHandler events](#audiohandler-events-1)
+  * [SL Multi-Channel Receiver DW](#sl-multi-channel-receiver-dw)
+    + [Quickstart](#quickstart-3)
+    + [Constructor](#constructor)
+    + [Handlers](#handlers-3)
+    + [Methods](#methods-3)
+      - [DeviceHandler methods](#devicehandler-methods-3)
+      - [RxHandler methods](#rxhandler-methods-1)
+      - [MeterHandler methods](#meterhandler-methods-1)
+    + [Properties](#properties-3)
+      - [DeviceHandler properties](#devicehandler-properties-3)
+      - [RxHandler properties](#rxhandler-properties-1)
+      - [TxHandler properties](#txhandler-properties-1)
+      - [AudioHandler properties](#audiohandler-properties-2)
+      - [MeterHandler properties](#meterhandler-properties-1)
+    + [Events](#events-3)
+      - [DeviceHandler events](#devicehandler-events-3)
+      - [RxHandler events](#rxhandler-events-1)
+      - [TxHandler events](#txhandler-events-1)
+      - [AudioHandler events](#audiohandler-events-2)
+      - [MeterHandler events](#meterhandler-events-1)
   * [Release notes](#release-notes)
+    + [1.1.0](#110)
     + [1.0.0 (Initial version)](#100--initial-version-)
 
 
@@ -71,6 +92,7 @@ This repository contains
             * [CHG 4N](#chg-4n)
             * [SL Rack Receiver DW](#sl-rack-receiver-dw)
             * [TeamConnect Ceiling 2](#teamconnect-ceiling-2)
+            * [SL Multi-Channel Receiver DW](#sl-mcr-dw)
     * `Specialelektronik.Products.Sennheiser.SscLib`
         * This project contains the base library for all Sennheiser modules. This is a good starting point to make a driver for future products that utilizes the Sennheiser SSC protocol. It handles the connections and provides some initial parsing.
     * `Specialelektronik.Products.Sennheiser.Test`
@@ -175,6 +197,12 @@ void BaysHandler_Events(object sender, Chg4NBaysEventArgs e)
         case Chg4NBaysEventArgs.eChg4NBayEventType.DeviceType:
             Chg4NBay.eBayDeviceType type = e.Bays[0].DeviceType;
             break;
+        case Chg4NBaysEventArgs.eChg4NBayEventType.Ipei:
+            string ipei = e.Bays[0].Ipei;
+            break;
+        case Chg4NBaysEventArgs.eChg4NBayEventType.LastPairedRfpi:
+            string rfpi = e.Bays[0].LastPairedRfpi;
+            break;
     }
 }
 ```
@@ -228,6 +256,8 @@ Located in `Chg4N.BaysHandler`.
     * `BatteryHealth` - This is the health of the in the battery. `1.0` = Perfect condition. `0.0` = Very bad, or no device inserted.
     * `MinutesToFull` - Returns the number of minutes left until device is fully charged.
     * `DeviceType` - Returns the device type. Possible types are `Handheld` or `Bodypack`.
+    * `Ipei` - The IPEI number of the inserted device.
+    * `LastPairedRfpi` - The last paired RFPI number of the inserted device. This can be used to identify which receiver the inserted device is paired with.
 
 ### Events
 
@@ -321,6 +351,12 @@ void RxHandler_Events(object sender, SldwRxEventArgs e)
             break;
         case SldwRxEventArgs.eSldwRxEventType.Warnings:
             string warning = e.StringValue;
+            break;
+        case SldwRxEventArgs.eSldwRxEventType.Rfpi:
+            string rfpi = e.StringValue;
+            break;
+        case SldwRxEventArgs.eSldwRxEventType.LastPairedIpei:
+            string iepi = e.StringValue;
             break;
     }
 }
@@ -429,6 +465,8 @@ Located in `Sldw.RxHandler`.
 * `MuteSwitchActive` - Sets or gets if the possibility to use the mute button on the transmitting device (such as the handmic or bodypack) should be possible. If `true`, the mute button on the transmitting device will be functional. 
 * `RfQuality` - If `EnableRfQualityFeedback()` has been called, this will contain the current RF connection quality with the transmitter. `1.0` = 100%. `0.0` = 0%
 * `Warnings` - The warning message shown on the frontpanel of the device.  Example: `"Bad Link"`.
+* `Rfpi` - The RFPI number of the device.
+* `LastPairedIpei` - The last paired IPEI number of the device. This can be used to identify which transmitter the device is paired with even when the transmitter is in the charger.
 
 #### TxHandler properties
 Located in `Sldw.TxHandler`.
@@ -720,7 +758,341 @@ Located in `Tcc2.AudioHandler`.
     * `StringValue` - Contains the new value of the property for event types `DanteMacAddresses` and `DanteIpAddresses`.
     * `SpeakerDetectionThreshold` - Contains the new value of the property for event type `SpeakerDetectionThreshold`.
 
+## SL Multi-Channel Receiver DW
+Class name: `SlMcrDw`
+
+This class integrates with Sennheiser SpeechLine Multi-Channel Receiver Digital Wireless (SL MCR DW), a wireless microphone system.  
+
+### Quickstart
+```csharp
+// Instantiate the device
+var device = new SlMcrDw(4); // Pass in the number of receivers that the device has, or that will be used.
+
+// Subscribe to events
+device.Errors += new EventHandler<SscErrorEventArgs>(Errors);
+device.DeviceHandler.Events += new EventHandler<SlMcrDwDeviceEventArgs>(DeviceHandler_Events);
+device.AudioHandler.Events += new EventHandler<SlMcrDwAudioEventArgs>(AudioHandler_Events);
+device.MeterHandler.Events += new EventHandler<SlMcrDwMeterEventArgs>(MeterHandler_Events);
+device.MeterHandler.EnableMixerLevelFeedback();
+device.MeterHandler.EnableRxInputLevelFeedbacks();
+foreach (var handler in device.TxHandlers)
+    handler.Events += new EventHandler<SlMcrDwTxEventArgs>(TxHandler_Events);
+foreach (var handler in device.RxHandlers)
+{
+    handler.Events += new EventHandler<SlMcrDwRxEventArgs>(RxHandler_Events);
+
+    // Enable RfQuality feedback reporting
+    handler.EnableRfQualityFeedback();
+}
+
+// Enable  feedback reporting for levels
+device.MeterHandler.EnableMixerLevelFeedback();
+device.MeterHandler.EnableRxInputLevelFeedbacks();
+
+// Connect to the device
+device.Connect("192.168.10.137");
+
+// DeviceHandler event handler
+void DeviceHandler_Events(object sender, SlMcrDwDeviceEventArgs e)
+{
+    switch (e.EventType)
+    {
+        case SlMcrDwDeviceEventArgs.eSlMcrDwDeviceEventType.Name:
+            string name = e.StringValue;
+            break;
+        case SlMcrDwDeviceEventArgs.eSlMcrDwDeviceEventType.Location:
+            string location = e.StringValue;
+            break;
+        case SlMcrDwDeviceEventArgs.eSlMcrDwDeviceEventType.Position:
+            string position = e.StringValue;
+            break;
+        case SlMcrDwDeviceEventArgs.eSlMcrDwDeviceEventType.Version:
+            string version = e.StringValue;
+            break;
+        case SlMcrDwDeviceEventArgs.eSlMcrDwDeviceEventType.Serial:
+            string serial = e.StringValue;
+            break;
+        case SlMcrDwDeviceEventArgs.eSlMcrDwDeviceEventType.Product:
+            string product = e.StringValue;
+            break;
+        case SlMcrDwDeviceEventArgs.eSlMcrDwDeviceEventType.MacAddresses:
+            string macAddresses = e.StringValue;
+            break;
+        case SlMcrDwDeviceEventArgs.eSlMcrDwDeviceEventType.LedBrightness:
+            int ledBrightness = e.IntValue; // A value between 0 and 5
+            break;
+        case SlMcrDwDeviceEventArgs.eSlMcrDwDeviceEventType.Identify:
+            bool identifying = e.BoolValue;
+            break;
+    }
+}
+
+// RxHandler event handler
+void RxHandler_Events(object sender, SlMcrDwRxEventArgs e)
+{
+    switch (e.EventType)
+    {
+        case SlMcrDwRxEventArgs.eSlMcrDwRxEventType.Identify:
+            bool identifying = e.BoolValue;
+            break;
+        case SlMcrDwRxEventArgs.eSlMcrDwRxEventType.RfQuality:
+            double rfQuality = e.DoubleValue; // A value between 0.0 and 1.0
+            break;
+        case SlMcrDwRxEventArgs.eSlMcrDwRxEventType.Warnings:
+            string warnings = e.StringValue;
+            break;
+        case SlMcrDwRxEventArgs.eSlMcrDwRxEventType.Rfpi:
+            string rfpi = e.StringValue;
+            break;
+        case SlMcrDwRxEventArgs.eSlMcrDwRxEventType.LastPairedIpei:
+            string ipei = e.StringValue;
+            break;
+    }
+}
+
+void TxHandler_Events(object sender, SlMcrDwTxEventArgs e)
+{
+    switch (e.EventType)
+    {
+        case SlMcrDwTxEventArgs.eSlMcrDwTxEventType.Active:
+            var active = e.BoolValue;
+            break;
+        case SlMcrDwTxEventArgs.eSlMcrDwTxEventType.DeviceType:
+            SlMcrDwTxHandler.eSlMcrDwTxDeviceType deviceType = e.DeviceType;
+            break;
+        case SlMcrDwTxEventArgs.eSlMcrDwTxEventType.BatteryType:
+            SlMcrDwTxHandler.eSlMcrDwTxBatteryType batteryType = e.BatteryType;
+            break;
+        case SlMcrDwTxEventArgs.eSlMcrDwTxEventType.Charging:
+            bool charging = e.BoolValue;
+            break;
+        case SlMcrDwTxEventArgs.eSlMcrDwTxEventType.BatteryGauge:
+            double batteryGauge = e.DoubleValue; // A value between 0.0 and 1.0
+            break;
+        case SlMcrDwTxEventArgs.eSlMcrDwTxEventType.BatteryHealth:
+            double batteryHealth = e.DoubleValue; // A value between 0.0 and 1.0
+            break;
+        case SlMcrDwTxEventArgs.eSlMcrDwTxEventType.BatteryLifetime:
+            double batteryLifetimeInMinutes = e.DoubleValue;
+            break;
+        case SlMcrDwTxEventArgs.eSlMcrDwTxEventType.Warnings:
+            string warning = e.StringValue;
+            break;
+    }
+}
+
+void AudioHandler_Events(object sender, SlMcrDwAudioEventArgs e)
+{
+    switch (e.EventType)
+    {
+        case SlMcrDwAudioEventArgs.eSlMcrDwAudioEventType.DanteMacAddresses:
+            string dateMacAddresses = e.StringValue; // Two comma separated addresses
+            break;
+        case SlMcrDwAudioEventArgs.eSlMcrDwAudioEventType.DanteIpAddresses:
+            string danteIpAddresses = e.StringValue; // Two comma separated addresses
+            break;
+        case SlMcrDwAudioEventArgs.eSlMcrDwAudioEventType.DanteOutputGain:
+            SlMcrDwAudioHandler.eSlMcrDwAudioOutputGain danteOutputGain = e.DanteOutputGain;
+            break;
+        case SlMcrDwAudioEventArgs.eSlMcrDwAudioEventType.RxOutputGain:
+            SlMcrDwAudioHandler.eSlMcrDwAudioOutputGain rxOutputGain =e.RxAudio.OutputGain;
+            break;
+        case SlMcrDwAudioEventArgs.eSlMcrDwAudioEventType.RxEq:
+            SlMcrDwRxAudio.eSlMcrDwAudioEq eq = e.RxAudio.Eq;
+            break;
+        case SlMcrDwAudioEventArgs.eSlMcrDwAudioEventType.RxLowCut:
+            bool lowCut = e.RxAudio.LowCut;
+            break;
+    }
+}
+
+void MeterHandler_Events(object sender, SlMcrDwMeterEventArgs e)
+{
+    switch (e.EventType)
+    {
+        case SlMcrDwMeterEventArgs.eSlMcrDwMeterEventType.RxInputLevel:
+            int rxInputLevel = e.IntValue; // A value between -60 and 0
+            break;
+        case SlMcrDwMeterEventArgs.eSlMcrDwMeterEventType.MixerLevel:
+            int mixerLevel = e.IntValue; // A value between -60 and 0
+            break;
+    }
+}
+```
+
+### Constructor
+As an argument, you have to pass in the number of receivers that the device has.
+
+### Handlers
+The device's properties, methods and events are located in a few different locations. This is completely based on how Sennheiser has decided to do in their protocol.
+On the root class `SlMcrDw` you will find some (see below) but you also the following handlers where you will find more.
+
+* `DeviceHandler` - Contains things regarding the device. This is found in `SlMcrDw.TxHandler`.
+* `RxHandlers[]` - A list of handlers, one for each receiver. Each handler contains things regarding the receiving end, such as RF quality. This is found in `SlMcrDw.RxHandler`.
+* `TxHandlers[]` - A list of handlers, one for each receiver. Each handler contains things regarding the transmitting end (the microphone or bodypack), such as battery level. This is found in `SlMcrDw.TxHandler`.
+* `AudioHandler` - Contains things regarding the receiving end, such as Output gain and EQ. This is found in `SlMcrDw.AudioHandler`.
+* `MeterHandler` - Contains things regarding meters, such as receiver input level. This is found in `SlMcrDw.MeterHandler`.
+
+### Methods
+
+* `Connect(string ip)` - Opens up the connection to the device. Uses default port 45.
+* `Connect(string ip, int port)` - Opens up the connection to the device.
+* `Disconnect` - Stops the connection to the device.
+* `Send(string data)` - Used as a way to send your own commands. Refer to the Sennheiser Sound Control Protocol (SSC). Example command: `{"device":{"reset":true}}`. 
+* `Send(object value, params string[] path)` - Used as a way to send your own commands. An example would be `Send("name", "device", "location")`.
+* `Dispose()` - Used to clean up timers and connections. This must be called when your program stops.
+
+#### DeviceHandler methods
+Located in `SlMcrDw.DeviceHandler`.
+
+* `PollInfo()` - Asks the device about `Version`, `Serial`, `Product` and `MacAddresses`. This is automatically done on connection, so your should not need to do this manually.
+
+#### RxHandler methods
+Located in `SlMcrDw.RxHandler`.
+
+* `EnableRfQualityFeedback()` - Enables subscription to RF quality feedback. When enabled the `SlMcrDw.RxHandlers[x].RfQuality` property will be continuosly updated. This will also cause the `SlMcrDw.RxHandler.Events` event to trig whenever there's a change. The reason you have to manually enable this is because the device is quite ”chatty” so if you don't use this feature all that traffic is unneccesary. 
+* `DisableRfQualityFeedback()` - Disables the RF quality feedback (see `EnableRfQualityFeedback()`).
+
+#### MeterHandler methods
+Located in `SlMcrDw.MeterHandler`.
+
+The reason you have to manually enable some feedback is because the device is quite ”chatty” so if you don't use those features all that traffic is unneccesary.
+
+* `EnableMixerLevelFeedback()` - Enables subscription to mixer level feedback. When enabled the `SlMcrDw.MeterHandler.MixerLevel` property will be continuosly updated. This will also cause the `SlMcrDw.MeterHandler.Events` event to trig whenever there's a change.  
+* `DisableMixerLevelFeedback()` - Disables the mixer level feedback.
+* `EnableRxInputLevelFeedbacks()` - Enables subscription to receiver input level feedback. When enabled the `SlMcrDw.MeterHandler.RxInputLevels[]` property will be continuosly updated. This will also cause the `SlMcrDw.MeterHandler.Events` event to trig whenever there's a change.  
+* `DisableRxInputLevelFeedbacks()` - Disables the receiver input level feedback.
+
+### Properties
+
+* `IsResponding` - Returns `true` as long as the device is responding. As the protocol uses UDP there is no connection state, so it might take up to a minute before responding goes low after the device has stopped responding. Listen to the `Responding` event to know when this changes.
+* `Debug` - Enables debug messages to be printed to the text console while set to `true`. Make sure this is not left on when not used.
+* `DeviceHandler` - Returns the device handler, where you have features, properties and events regarding the device.
+* `RxHandler` - Returns the RX handler, where you have features, properties and events regarding the receiving end, such as RF quality.
+* `TxHandler` - Returns the TX handler, where you have features, properties and events regarding the transmitting end (the microphone or bodypack), such as battery level.
+* `AudioHandler` - Returns the audio handler, where you have features, properties and events regarding the receiving end, such as Output gain and EQ.
+
+#### DeviceHandler properties
+Located in `SlMcrDw.DeviceHandler`.
+
+* `Name` - Sets or gets the name of the device. Max 8 chars.
+* `Version` - The firmware version of the device. Example: 1.1.0.
+* `Serial` - The serial number of the device. Example: 1234567890.
+* `Product` - The product name of the device. Example: CHG4N.
+* `MacAddresses` - The mac adresses of the device. Example: 00:1B:66:11:22:33.
+* `Location` - Sets or gets the location of the device. Max length: 8 characters. Allowed chars: 0-9, A-Z, a-z or 'space'. Must start with a letter. May not start or end with a – or _.
+* `Position` - Sets or gets the position of the device. Intended to be used as the position in the location. Example if location is `"Room_1"`, position might be `"Over the table"`. Max length: 30 chars. Allowed chars: 0-9, A-Z, a-z or 'space'
+* `Identify` - Sets or gets if the identify feature of the device is enabled.
+* `LedBrightness` - Sets or gets the brightness of the leds on the device in steps of 20%. A value between 0 and 5 where `0` = 0% and `5` = 100%.
+
+#### RxHandler properties
+Located in `SlMcrDw.RxHandlers[x]`.
+
+* `Identify` - Sets or gets if the identify feature of the device is enabled. It blinks a LED on the device when `true`.
+* `RfQuality` - If `EnableRfQualityFeedback()` has been called, this will contain the current RF connection quality with the transmitter. `1.0` = 100%. `0.0` = 0%
+* `Warnings` - The warning message of the device. Example: `"Bad Link"`.
+* `Rfpi` - The RFPI number of the device.
+* `LastPairedIpei` - The last paired IPEI number of the device. This can be used to identify which transmitter the device is paired with even when the transmitter is in the charger.
+
+#### TxHandler properties
+Located in `SlMcrDw.TxHandlers[x]`.
+
+* `Active` - This is `true` when a transmitter (such as the handmic or bodypack) is turned on and connected to the device.
+* `DeviceType` - The currently connected transmitter type. Possible values are `Handheld`, `Bodypack`, `Tablestand` and `Boundary`.
+* `BatteryType` - The currently connected transmitters battery type. Possible values are `Battery` and `Rechargable`.
+* `Charging` - This is `true` when a transmitter is charging while it is on and connected. This will not work when charging a handmic or bodypack in the CHG-4N, as it will then disconnect from the device.
+* `BatteryGauge` - The currently connected transmitters battery level. `1.0` = Full. `0.0` = Empty.
+* `BatteryHealth` - The currently connected transmitters battery health level. `1.0` = Perfect condition. `0.0` = Very bad
+* `BatteryLifetime` - The currently connected transmitters battery lifetime in minutes. Lifetime means before you have to replace the rechargable battery with a new one, not until the current charge is depleted. This only works if you have a rechargable battery.
+* `Warnings` - The warning message shown on the frontpanel of the transmitter.  Example: `"Low Bat"`.
+
+#### AudioHandler properties
+Located in `SlMcrDw.AudioHandler`.
+
+* `DanteMacAddresses` - The mac addresses of the Dante outputs. This returns both addresses separated with a comma. Example: 00:1B:66:44:55:66,00:1B:66:77:88:99.
+* `DanteIpAddresses` - The ip addresses of the Dante outputs. This returns both addresses separated with a comma. If there is no network cable connected or no addresses set, this might return a string only containing a comma.  Example: 192.168.10.2,192.168.10.3.
+* `DanteOutputGain` - Sets or gets the dante output gain as an enum. The values range from -24dB to 12dB in steps of 6dB.
+* `RxAudio[]` - An array audio settings for each receiver. Each object has a set of properties.
+    * `OutputGain` - Sets or gets the output gain as an enum. The values range from -24dB to 12dB in steps of 6dB.
+    * `Eq` - Sets or gets the currently selected eq. Possible valus are `Off`, `FemaleSpeech`, `MaleSpeech`, `Media` and `Custom`.
+    * `LowCut` - Sets or gets if the Low Cut equalizer feature is enabled. It removes the bass frequencies in the audio. Low cut is enabled if `true`.
+
+#### MeterHandler properties
+Located in `SlMcrDw.MeterHandler`.
+
+* `MixerLevel` - If `EnableMixerLevelFeedback()` has been called, this will contain the mixed audio level. A value between `-60` and `0`.
+* `RxInputLevels[]` - If `EnableRxInputLevelFeedbacks()` has been called, this will contain an array of incoming audio levels on the different channels. A value between -60 and 0.
+
+### Events
+
+* `Errors` - Will trig when there are error messages from the device. The event args contains:
+    * `Json` - The raw JSON data returned from the device. Warning! See [Important notes and known issues](#important-notes-and-known-issues)
+* `Responding` - Will trig when the device starts or stops respoding. The event args contains:
+    * `Responding` - Is `true` if the device is responding.
+* `IncomingCommand` - This will trig whenever there is incoming data from the device. The use case for this would be to extend the functionality of the library. The event args contains:
+    * `Command` - The JSON data that was received.
+    * `Handled` - If you set this to `true` then this command will not be handled by the library.
+
+#### DeviceHandler events
+Located in `SlMcrDw.DeviceHandler`.
+
+* `Events` - This will trig when any of the [DeviceHandler properties](#devicehandler-properties-4) change. The event args contains:
+    * `EventType` - An enum telling you which property changed.
+    * `StringValue` - The new value of the changed property.
+    * `IntValue` - Contains the new value of the property for event type `LedBrightness`.
+    * `BoolValue` - Contains the new value of the property for event type `Identify`.
+
+#### RxHandler events
+Located in `SlMcrDw.RxHandlers[x]`.
+
+* `Events` - This will trig when any of the [RxHandler properties](#rxhandler-properties-2) change. The event args contains:
+    * `EventType` - An enum telling you which property changed.
+    * `BoolValue` - Contains the new value of the property for event types `Identify` and `MuteSwitchActive`.
+    * `DoubleValue` - Contains the new value of the property for event type `RfQuality`.
+    * `StringValue` - Contains the new value of the property for event types `Warnings`, `Rfpi` and `LastPairedIpei`.
+
+#### TxHandler events
+Located in `SlMcrDw.TxHandlers[x]`.
+
+* `Events` - This will trig when any of the [TxHandler properties](#txhandler-properties-2) change. The event args contains:
+    * `EventType` - An enum telling you which property changed.
+    * `BoolValue` - Contains the new value of the property for event types `Active` and `Charging`.
+    * `DoubleValue` - Contains the new value of the property for event types `BatteryGauge`, `BatteryHealth` and `BatteryLifetime`.
+    * `StringValue` - Contains the new value of the property for event type `Warnings`.
+    * `DeviceType` - Contains the new value of the property for event type `DeviceType`.
+    * `BatteryType` - Contains the new value of the property for event type `BatteryType`.
+
+#### AudioHandler events
+Located in `SlMcrDw.AudioHandler`.
+
+* `Events` - This will trig when any of the [AudioHandler properties](#audiohandler-properties-3) change. The event args contains:
+    * `EventType` - An enum telling you which property changed.
+    * `StringValue` - Contains the new value of the property for event types `DanteMacAddresses` and `DanteIpAddresses`.
+    * `DanteOutputGain` - Contains the new value of the property for event type `DanteOutputGain`.
+    * `RxAudio` - Contains the `SlMcrDwRxAudio` object for the receiver that changed for event types `RxLowCut`, `RxEq` and `RxOutputGain`.
+        * `OutputGain` - Contains the new value of the property for event type `RxOutputGain`.
+        * `Eq` - Contains the new value of the property for event type `RxEq`.
+        * `LowCut` - Contains the new value of the property for event type `RxLowCut`.
+
+#### MeterHandler events
+Located in `SlMcrDw.MeterHandler`.
+
+* `Events` - This will trig when any of the [MeterHandler properties](#meterhandler-properties-2) change. The event args contains:
+    * `EventType` - An enum telling you which property changed.
+    * `IntValue` - The new value of the changed property. 
+
+
 ## Release notes
+
+### 1.1.0
+
+* Added SL Multi-Channel Receiver DW (`SlMcrDw`)
+* Added properties to `Chg4N`
+    * `BaysHandler.Bays[x].Ipei` - The IPEI number of the inserted device.
+    * `BaysHandler.Bays[x].LastPairedRfpi` - The last paired RFPI number of the inserted device. This can be used to identify which receiver the inserted device is paired with.
+* Added properties to `Sldw`
+    * `RxHandler.Rfpi` - The RFPI number of the device.
+    * `RxHandler.LastPairedIpei` - The last paired IPEI number of the device. This can be used to identify which transmitter the device is paired with even when the transmitter is in the charger.
 
 ### 1.0.0 (Initial version)
 

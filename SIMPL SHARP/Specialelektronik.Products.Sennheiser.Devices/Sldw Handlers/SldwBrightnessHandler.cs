@@ -17,7 +17,7 @@ namespace Specialelektronik.Products.Sennheiser
         /// <summary>
         /// Returns the base property of this handler, which is "brightness".
         /// </summary>
-        protected override string BaseProperty { get { return "brightness"; } }
+        protected override string BaseProperty { get { return base.BaseProperty; } }
 
         /// <summary>
         /// This will be trigged when the brightness changed.
@@ -40,7 +40,7 @@ namespace Specialelektronik.Products.Sennheiser
         /// This class is for internal use only.
         /// </summary>
         public SldwBrightnessHandler(SscCommon common)
-            : base(common)
+            : base(common, "brightness")
         {
             Handlers.Add("brightness", HandleBrightness);
 

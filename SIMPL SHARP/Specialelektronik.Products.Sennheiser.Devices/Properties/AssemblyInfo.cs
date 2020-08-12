@@ -4,5 +4,5 @@
 [assembly: AssemblyCompany("JaDeVa AB")]
 [assembly: AssemblyProduct("Specialelektronik.Products.Sennheiser.Devices")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
-[assembly: AssemblyVersion("1.0.0")]
+[assembly: AssemblyVersion("1.1.0")]
 
